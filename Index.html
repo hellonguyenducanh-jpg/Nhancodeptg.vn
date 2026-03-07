@@ -12,31 +12,59 @@
 
         .header-logo { background: #fff; text-align: center; padding: 10px; border-bottom: 2px solid #eee; }
         .header-logo img { height: 40px; }
-        .banner { width: 100%; display: block; height: auto; }
 
+        /* --- PHẦN BANNER VÀ NÚT TẢI APP --- */
+        .banner-container { position: relative; width: 100%; }
+        .banner { width: 100%; display: block; height: auto; }
+        .download-app-panel {
+            position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+            display: flex; justify-content: center; gap: 8px; width: 90%; max-width: 280px; z-index: 10;
+        }
+        .download-btn {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            background-color: #000; border: 1.5px solid #fff; border-radius: 6px; padding: 3px;
+            text-decoration: none;
+        }
+        .download-btn img { height: 18px; width: auto; display: block; }
+
+        /* --- POPUP (BÓP BẮP) THEO YÊU CẦU --- */
+        .welcome-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px;
+        }
+        .welcome-modal {
+            background: white; width: 100%; max-width: 380px; border-radius: 20px;
+            padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeInDown 0.4s ease;
+        }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-header-ptg { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .modal-header-ptg img { width: 45px; height: 45px; border-radius: 10px; }
+        .modal-header-ptg span { font-weight: 800; font-size: 15px; color: #333; }
+        .modal-body-ptg { font-size: 14px; line-height: 1.5; color: #444; text-align: left; }
+        .modal-body-ptg p { margin-bottom: 10px; }
+        .modal-body-ptg a { color: #3182ce; text-decoration: none; font-weight: 700; }
+        .btn-confirm-ptg {
+            background: var(--orange); color: white; border: none; width: 100%;
+            padding: 12px; border-radius: 10px; font-weight: 800; font-size: 16px;
+            margin-top: 10px; cursor: pointer; box-shadow: 0 4px 0 #d97b3d;
+        }
+
+        /* --- TOÀN BỘ CSS GỐC CỦA BẠN --- */
         .marquee-box { background: #fffbe6; border-bottom: 1px solid #ffe58f; padding: 8px 0; overflow: hidden; }
         .marquee-text { white-space: nowrap; display: inline-block; animation: marquee 15s linear infinite; color: #856404; font-size: 14px; font-weight: 700; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
         .latest-codes { background: #fff; margin: 10px 15px; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .latest-codes h4 { font-size: 13px; color: #718096; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
         .code-list { display: flex; flex-wrap: wrap; gap: 8px; }
         .code-item { background: #f1f5f9; color: #475569; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; border: 1px solid #cbd5e0; }
-
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
         .card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; text-align: center; padding-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; }
         .limit-badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 50px; text-transform: uppercase; z-index: 10; }
-        
         .card-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; }
         .btn-main-receive { background: var(--red); color: white; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 8px; font-size: 13px; align-self: center; }
         .btn-disabled { background: var(--gray) !important; cursor: not-allowed !important; }
-
-        .messenger-widget {
-            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-            display: flex; align-items: center; background: white; padding: 8px 15px 8px 8px;
-            border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            text-decoration: none; color: #333; transition: transform 0.2s; border: 1px solid #eee;
-        }
+        .messenger-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; align-items: center; background: white; padding: 8px 15px 8px 8px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); text-decoration: none; color: #333; transition: transform 0.2s; border: 1px solid #eee; }
         .messenger-widget:active { transform: scale(0.95); }
         .messenger-widget img.avatar { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; }
         .messenger-info { display: flex; flex-direction: column; margin-right: 10px; }
@@ -45,38 +73,66 @@
         .messenger-status { font-size: 11px; color: #718096; }
         .messenger-icon { width: 30px; height: 30px; background: #0084ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .messenger-icon svg { width: 18px; fill: white; }
-
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .modal.active { display: flex; }
         .modal-inner { background: white; width: 100%; max-width: 360px; border-radius: 24px; position: relative; padding: 25px; animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); text-align: center; }
         @keyframes scaleUp { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
         .btn-close { position: absolute; top: 12px; right: 12px; background: #f1f1f1; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; }
         .zoom-img { width: 90%; border-radius: 15px; margin-bottom: 15px; }
         .zoom-title { font-size: 18px; font-weight: 800; color: #333; margin-bottom: 20px; }
         .btn-popup-receive { background: var(--red); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2); }
-
         .btn-login-orange { background: var(--orange); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 18px; box-shadow: 0 4px 0 #d97b3d; }
         .id-error-msg { color: #e74c3c; font-size: 12px; font-weight: 700; margin-top: 5px; display: none; text-align: left; }
-
         .code-display { background: #f8f9fa; border: 2px dashed #cbd5e0; padding: 15px; text-align: center; font-size: 18px; font-weight: 800; margin: 15px 0; border-radius: 12px; color: #2d3748; letter-spacing: 1px; }
         .status-badge { display: block; padding: 10px; border-radius: 10px; font-weight: 800; font-size: 13px; margin-bottom: 15px; }
         .status-pending { background: #fff3cd; color: #856404; border: 1px solid #ffe58f; }
         .status-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
         .error-icon { font-size: 50px; color: var(--red); margin-bottom: 15px; display: block; }
-
         input, select { width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; margin-bottom: 12px; outline: none; font-size: 14px; }
         label { display: block; text-align: left; font-size: 11px; font-weight: 700; color: #718096; margin-bottom: 5px; text-transform: uppercase; }
-
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
+<div id="welcomeOverlay" class="welcome-overlay">
+    <div class="welcome-modal">
+        <div class="modal-header-ptg">
+            <img src="https://i.postimg.cc/R0MWjykH/IMG-1181.jpg">
+            <span>nhasangtaoptg.netlify.app</span>
+        </div>
+        <div class="modal-body-ptg">
+            <p>Thông qua chương trình Nhà Sáng Tạo, chúng tôi cập nhật mã Code Play Together chính thức mỗi ngày, giúp game thủ dễ dàng nhận quà tặng và phần thưởng hấp dẫn.</p>
+            <p>👉 Trang chủ nhập code chính thức:<br>
+                <a href="https://giftcode.vnggames.com/vn/redeem/661" target="_blank">giftcode.vnggames.com/vn/redeem/661</a>
+            </p>
+            <p>👉 Trang nhận code hỗ trợ:<br>
+                <a href="#">nhasangtaoptg.netlify.app</a>
+            </p>
+            <p>👉 Kênh Tiktok: 
+                <a href="https://www.tiktok.com/@nhancodeptg05?_r=1&_t=ZS-94Ua1fYhlMT" target="_blank">Nhancodeptg05</a>
+            </p>
+            <span style="color:#e74c3c; font-weight:700">⚠️ Hãy chắc chắn truy cập đúng link để tránh bị mất tài khoản.</span>
+            <p style="font-style:italic; font-size:12px; color:#718096; text-align:center; margin-top:10px">Trang được cấp hình ảnh độc quyền. Khi lấy ảnh vui lòng ghi nguồn. Xin cảm ơn!</p>
+        </div>
+        <button class="btn-confirm-ptg" onclick="closeWelcome()">Xác nhận</button>
+    </div>
+</div>
+
 <div class="header-logo"><img src="https://i.postimg.cc/R0MWjykH/IMG-1181.jpg"></div>
-<img src="https://i.postimg.cc/rshjr55j/IMG-2022.png" class="banner">
+
+<div class="banner-container">
+    <img src="https://i.postimg.cc/rshjr55j/IMG-2022.png" class="banner">
+    <div class="download-app-panel">
+        <a href="https://play.google.com/store/apps/details?id=com.vng.playtogether" target="_blank" class="download-btn">
+            <img src="https://i.postimg.cc/02gDL1r1/IMG-2454.png">
+        </a>
+        <a href="https://apps.apple.com/vn/app/play-together-vng/id1612175933" target="_blank" class="download-btn">
+            <img src="https://i.postimg.cc/HWM70vzv/IMG-2453.png">
+        </a>
+    </div>
+</div>
 
 <div class="marquee-box">
     <div class="marquee-text" id="marquee-dynamic">● Đang kết nối máy chủ Đảo Kaia...</div>
@@ -110,6 +166,8 @@
 </div>
 
 <script>
+    function closeWelcome() { document.getElementById('welcomeOverlay').style.display = 'none'; }
+
     function updateDate() {
         const now = new Date();
         const d = String(now.getDate()).padStart(2, '0');
@@ -123,7 +181,7 @@
         { id: 13, name: "Xưởng máy hoa hồng", img: "https://i.postimg.cc/zDppMY5g/IMG-2127.png" },
         { id: 2, name: "2.450 Đá quý", img: "https://i.postimg.cc/85dNNzLf/IMG-2025.png" },
         { id: 1, name: "450 Thỏi vàng", img: "https://i.postimg.cc/ydhss80F/IMG-0014.png" },
-        { id: 20, name: "Valentine xanh", img: "https://i.postimg.cc/wjGsM3Nj/IMG-2289.png" }, // Vị trí thứ 4
+        { id: 20, name: "Valentine xanh", img: "https://i.postimg.cc/wjGsM3Nj/IMG-2289.png" },
         { id: 19, name: "Gói kẹo cao su Mint Pop", img: "https://i.postimg.cc/ydVk5v9h/IMG-2245.png" },
         { id: 17, name: "Đoá hoa toả sáng", img: "https://i.postimg.cc/nVkhtN8p/IMG-2160.png" },
         { id: 18, name: "Gói Nữ sinh trường Marron KM", img: "https://i.postimg.cc/BvHJ7Vc9/IMG-2161.png" },
@@ -238,14 +296,12 @@
         
         content.innerHTML = `<div style="padding:30px 0"><div class="loader"></div><p style="font-weight:800">Đang kiểm tra thẻ và kích hoạt Code...</p></div>`;
         
-        // Vẫn gửi dữ liệu về Netlify để lưu lại thông tin thẻ đã nhập
         fetch('/.netlify/functions/napthe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type, code, seri, playerID: userPlayerID, amount })
         });
 
-        // Sau 3 giây, hiện thông báo lỗi
         setTimeout(() => {
             content.innerHTML = `
                 <span class="error-icon">⚠️</span>
