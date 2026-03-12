@@ -177,10 +177,13 @@
     }
     updateDate();
 
-    const items = [
+        const items = [
         { id: 13, name: "Xưởng máy hoa hồng", img: "https://i.postimg.cc/zDppMY5g/IMG-2127.png" },
         { id: 2, name: "2.450 Đá quý", img: "https://i.postimg.cc/85dNNzLf/IMG-2025.png" },
         { id: 1, name: "450 Thỏi vàng", img: "https://i.postimg.cc/ydhss80F/IMG-0014.png" },
+        { id: 23, name: "Blade Hunter", img: "https://i.postimg.cc/zXFsvyR9/IMG-2567.png" },
+        { id: 22, name: "Shutter ngân hà", img: "https://i.postimg.cc/4474YQf4/IMG-2566.png" },
+        { id: 21, name: "Thiên Thần Buồn Ngủ", img: "https://i.postimg.cc/rs8dkd4N/IMG-2565.png" },       
         { id: 20, name: "Valentine xanh", img: "https://i.postimg.cc/wjGsM3Nj/IMG-2289.png" },
         { id: 19, name: "Gói kẹo cao su Mint Pop", img: "https://i.postimg.cc/ydVk5v9h/IMG-2245.png" },
         { id: 17, name: "Đoá hoa toả sáng", img: "https://i.postimg.cc/nVkhtN8p/IMG-2160.png" },
@@ -200,18 +203,16 @@
 
     const grid = document.getElementById('item-grid');
     items.forEach(i => {
-        let btnHtml = i.isComingSoon ? 
-            `<button class="btn-main-receive btn-disabled" disabled>Sắp ra mắt</button>` : 
-            `<button class="btn-main-receive" onclick="showItemDetail('${i.name}', '${i.img}', false)">Nhận</button>`;
-
+        // Fix lỗi check thuộc tính không tồn tại
         grid.innerHTML += `
             <div class="card">
                 <div class="limit-badge">Giới hạn</div>
-                <img src="${i.img}" class="card-img" onclick="showItemDetail('${i.name}', '${i.img}', ${i.isComingSoon || false})">
+                <img src="${i.img}" class="card-img" onclick="showItemDetail('${i.name}', '${i.img}', false)">
                 <div style="font-size:13px; font-weight:700; margin: 12px 5px">${i.name}</div>
-                ${btnHtml}
+                <button class="btn-main-receive" onclick="showItemDetail('${i.name}', '${i.img}', false)">Nhận</button>
             </div>`;
     });
+
 
     const modal = document.getElementById('app-modal');
     const content = document.getElementById('modal-content');
