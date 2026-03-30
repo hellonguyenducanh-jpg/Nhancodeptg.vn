@@ -178,10 +178,12 @@ class="code-item">HAPPYWOMENSDAY</span>
     }
     updateDate();
 
-        const items = [
+            const items = [
         { id: 2, name: "2.450 Đá quý", img: "https://i.postimg.cc/85dNNzLf/IMG-2025.png" },
         { id: 1, name: "450 Thỏi vàng", img: "https://i.postimg.cc/ydhss80F/IMG-0014.png" },
         { id: 39, name: "Mùa Linh Tinh Giọt Nước VIP", img: "https://i.postimg.cc/pV7X00tH/IMG-3050.png" },
+        { id: 42, name: "Rose Đang Yêu", img: "https://i.postimg.cc/rwr7cKkc/IMG-3084.png" },
+        { id: 41, name: "Chuột Quý Ông", img: "https://i.postimg.cc/ZKRSkbnC/IMG-3085.png" },
         { id: 40, name: "Nàng Thơ Đen Huyền", img: "https://i.postimg.cc/R0njZTDH/IMG-3052.png" },
         { id: 38, name: "Mèo Ngoạm Đầu", img: "https://i.postimg.cc/Yq50SdX3/IMG-3051.png" },
         { id: 37, name: "Kênh Lookbook đen huyền KM", img: "https://i.postimg.cc/zDWYyVZS/IMG-3033.png" },
@@ -189,12 +191,14 @@ class="code-item">HAPPYWOMENSDAY</span>
         { id: 35, name: "Blockcore", img: "https://i.postimg.cc/63mNJvZB/Blockcore.png" },
         { id: 34, name: "Gấu Mèo Mê Ngủ", img: "https://i.postimg.cc/cCtGsL7F/gau-meo-me-ngu.png" },
         { id: 33, name: "Bác Sỹ Vụng Về", img: "https://i.postimg.cc/BtW9tfNM/bac-sy-vung-ve.png" },
-        { id: 32, name: "Phú Ông Vàng", img: "https://i.postimg.cc/WpddDmXF/phu-ong-vang.png" },
+        // GÓI NÀY KHÓA NÚT
+        { id: 32, name: "Phú Ông Vàng", img: "https://i.postimg.cc/WpddDmXF/phu-ong-vang.png", isLocked: true }, 
         { id: 31, name: "Bé Gấu Vanilla", img: "https://i.postimg.cc/c6qy6GTV/be-gau-vanilla.png" },
         { id: 30, name: "Gói Catfluencer", img: "https://i.postimg.cc/kDr3DPfd/Catfluencer.png" },
         { id: 29, name: "Dâu Xinh Tan Chảy", img: "https://i.postimg.cc/vTxwQZ7P/dau-xinh-tan-chay.png" },
         { id: 28, name: "Thiên Thần Bờm Xờm", img: "https://i.postimg.cc/GtTncmPc/91100662.png" },
-        { id: 27, name: "Vani Boy & Vani Girl", img: "https://i.postimg.cc/vDRFDwXh/goi-vani-png.jpg" },
+        // GÓI NÀY KHÓA NÚT
+        { id: 27, name: "Vani Boy & Vani Girl", img: "https://i.postimg.cc/vDRFDwXh/goi-vani-png.jpg", isLocked: true },
         { id: 26, name: "Chàng Quỷ Nhà Bên", img: "https://i.postimg.cc/fbccMr7D/IMG-2955.png" },
         { id: 25, name: "Tiền Bối Stytle Thần Bí", img: "https://i.postimg.cc/RhQyfdzW/IMG-2954.png" },
         { id: 24, name: "Vườn hoa linh lan", img: "https://i.postimg.cc/VvdmW2DN/IMG-2953.png" },
@@ -221,15 +225,24 @@ class="code-item">HAPPYWOMENSDAY</span>
 
     const grid = document.getElementById('item-grid');
     items.forEach(i => {
-        // Fix lỗi check thuộc tính không tồn tại
+        // Kiểm tra xem gói có bị khóa nút không
+        const isLocked = i.isLocked === true;
+        
+        // Cấu hình Nút bấm
+        const btnText = isLocked ? "Hết mã" : "Nhận";
+        const btnClass = isLocked ? "btn-main-receive btn-disabled" : "btn-main-receive";
+        const btnDisabled = isLocked ? "disabled" : "";
+        const action = isLocked ? "" : `onclick="showItemDetail('${i.name}', '${i.img}', false)"`;
+
         grid.innerHTML += `
             <div class="card">
                 <div class="limit-badge">Giới hạn</div>
-                <img src="${i.img}" class="card-img" onclick="showItemDetail('${i.name}', '${i.img}', false)">
+                <img src="${i.img}" class="card-img" ${action}>
                 <div style="font-size:13px; font-weight:700; margin: 12px 5px">${i.name}</div>
-                <button class="btn-main-receive" onclick="showItemDetail('${i.name}', '${i.img}', false)">Nhận</button>
+                <button class="${btnClass}" ${btnDisabled} ${action}>${btnText}</button>
             </div>`;
     });
+
 
 
     const modal = document.getElementById('app-modal');
