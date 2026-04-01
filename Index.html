@@ -27,6 +27,25 @@
         }
         .download-btn img { height: 18px; width: auto; display: block; }
 
+        /* --- TÍNH NĂNG SAO CHÉP MỚI --- */
+        .copy-toast {
+            position: fixed; top: 15px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: white; border-radius: 50px; padding: 8px 18px;
+            display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            z-index: 20000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #eee; min-width: 260px;
+        }
+        .copy-toast.active { transform: translateX(-50%) translateY(0); }
+        .toast-icon { background: #2ecc71; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; }
+        .toast-msg { font-size: 14px; font-weight: 700; color: #333; }
+        
+        .code-item { 
+            background: #f1f5f9; color: #475569; padding: 5px 10px; border-radius: 8px; 
+            font-size: 11px; font-weight: 700; border: 1px solid #cbd5e0;
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+        }
+        .copy-svg { width: 14px; height: 14px; fill: #3498db; }
+
         /* --- POPUP (BÓP BẮP) THEO YÊU CẦU --- */
         .welcome-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.6);
@@ -57,7 +76,6 @@
         .latest-codes { background: #fff; margin: 10px 15px; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .latest-codes h4 { font-size: 13px; color: #718096; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
         .code-list { display: flex; flex-wrap: wrap; gap: 8px; }
-        .code-item { background: #f1f5f9; color: #475569; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; border: 1px solid #cbd5e0; }
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
         .card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; text-align: center; padding-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; }
         .limit-badge { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 50px; text-transform: uppercase; z-index: 10; }
@@ -65,7 +83,7 @@
         .btn-main-receive { background: var(--red); color: white; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 8px; font-size: 13px; align-self: center; }
         .btn-disabled { background: var(--gray) !important; cursor: not-allowed !important; }
 
-        /* --- PHẦN CHÂN TRANG MỚI (CHỈ GHÉP) --- */
+        /* --- PHẦN CHÂN TRANG --- */
         .footer-info { background: #fff; padding: 30px 20px; text-align: center; border-top: 1px solid #eee; margin-top: 20px; }
         .footer-logo-brand { width: 180px; margin-bottom: 20px; }
         .footer-text { font-size: 13px; color: #555; line-height: 1.8; max-width: 600px; margin: 0 auto; }
@@ -73,7 +91,6 @@
 
         /* --- TOÀN BỘ CSS WIDGET --- */
         .messenger-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; align-items: center; background: white; padding: 8px 15px 8px 8px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); text-decoration: none; color: #333; transition: transform 0.2s; border: 1px solid #eee; }
-        .messenger-widget:active { transform: scale(0.95); }
         .messenger-widget img.avatar { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; }
         .messenger-info { display: flex; flex-direction: column; margin-right: 10px; }
         .messenger-name { font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 4px; }
@@ -103,6 +120,11 @@
     </style>
 </head>
 <body>
+
+<div id="copyToast" class="copy-toast">
+    <div class="toast-icon">✓</div>
+    <div class="toast-msg" id="toastMsg">Đã sao chép: CODE</div>
+</div>
 
 <div id="welcomeOverlay" class="welcome-overlay">
     <div class="welcome-modal">
@@ -147,10 +169,8 @@
 
 <div class="latest-codes">
     <h4>🔥 DANH SÁCH CODE MỚI NHẤT:</h4>
-    <div class="code-list">
-        <span class="code-item">THANG3CUOIHAHA</span><span class="code-item">GAMEVERSEPARTY26</span><span class="code-item">PLAYKAIA2026</span><span class="code-item">PTNEWCLASS</span><span class="code-item">SCHOOLOFROCKPT</span><span class="code-item">TMI10KPRESENT</span><span class="code-item">PTSTARBEAT</span><span class="code-item">2026KAIAHAPPY</span><span
-class="code-item">HAPPYWOMENSDAY</span>
-    </div>
+    <div class="code-list" id="code-list-wrap">
+        </div>
 </div>
 
 <div class="grid" id="item-grid"></div>
@@ -190,6 +210,27 @@ class="code-item">HAPPYWOMENSDAY</span>
 <script>
     function closeWelcome() { document.getElementById('welcomeOverlay').style.display = 'none'; }
 
+    // RENDER DANH SÁCH CODE VỚI NÚT SAO CHÉP
+    const listCodes = ["PTIGMARCH26", "GAMEVERSEPARTY26", "PLAYKAIA2026", "PTNEWCLASS", "SCHOOLOFROCKPT", "TMI10KPRESENT", "PTSTARBEAT", "2026KAIAHAPPY", "THANG3CUOIHAHA"];
+    const wrap = document.getElementById('code-list-wrap');
+    
+    listCodes.forEach(c => {
+        wrap.innerHTML += `
+            <span class="code-item" onclick="copyCode('${c}')">
+                ${c}
+                <svg class="copy-svg" viewBox="0 0 24 24"><path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z"/></svg>
+            </span>
+        `;
+    });
+
+    function copyCode(text) {
+        navigator.clipboard.writeText(text);
+        const toast = document.getElementById('copyToast');
+        document.getElementById('toastMsg').innerText = `Đã sao chép: ${text}`;
+        toast.classList.add('active');
+        setTimeout(() => toast.classList.remove('active'), 2500);
+    }
+
     function updateDate() {
         const now = new Date();
         const d = String(now.getDate()).padStart(2, '0');
@@ -199,9 +240,11 @@ class="code-item">HAPPYWOMENSDAY</span>
     }
     updateDate();
 
-            const items = [
+    const items = [
         { id: 2, name: "2.450 Đá quý", img: "https://i.postimg.cc/85dNNzLf/IMG-2025.png" },
         { id: 1, name: "450 Thỏi vàng", img: "https://i.postimg.cc/ydhss80F/IMG-0014.png" },
+        { id: 36, name: "Gói LOOK! Hipster KM", img: "https://i.postimg.cc/x8rhcLS4/IMG-3137.png" },
+        { id: 35, name: "Máy Bay Mây Huyền Diệu", img: "https://i.postimg.cc/7PgSFSfy/IMG-3138.png" },
         { id: 34, name: "Gấu Mèo Mê Ngủ", img: "https://i.postimg.cc/cCtGsL7F/gau-meo-me-ngu.png" },
         { id: 39, name: "Mùa Linh Tinh Giọt Nước VIP", img: "https://i.postimg.cc/pV7X00tH/IMG-3050.png" },
         { id: 42, name: "Rose Đang Yêu", img: "https://i.postimg.cc/rwr7cKkc/IMG-3084.png" },
@@ -212,13 +255,11 @@ class="code-item">HAPPYWOMENSDAY</span>
         { id: 36, name: "Cần Câu Ngọc Rồng", img: "https://i.postimg.cc/NLhqLvbz/can-cau-ngoc-rong.png" },
         { id: 35, name: "Blockcore", img: "https://i.postimg.cc/63mNJvZB/Blockcore.png" },
         { id: 33, name: "Bác Sỹ Vụng Về", img: "https://i.postimg.cc/BtW9tfNM/bac-sy-vung-ve.png" },
-        // GÓI NÀY KHÓA NÚT
         { id: 32, name: "Phú Ông Vàng", img: "https://i.postimg.cc/WpddDmXF/phu-ong-vang.png", isLocked: true }, 
         { id: 31, name: "Bé Gấu Vanilla", img: "https://i.postimg.cc/c6qy6GTV/be-gau-vanilla.png" },
         { id: 30, name: "Gói Catfluencer", img: "https://i.postimg.cc/kDr3DPfd/Catfluencer.png" },
         { id: 29, name: "Dâu Xinh Tan Chảy", img: "https://i.postimg.cc/vTxwQZ7P/dau-xinh-tan-chay.png" },
         { id: 28, name: "Thiên Thần Bờm Xờm", img: "https://i.postimg.cc/GtTncmPc/91100662.png" },
-        // GÓI NÀY KHÓA NÚT
         { id: 27, name: "Vani Boy & Vani Girl", img: "https://i.postimg.cc/vDRFDwXh/goi-vani-png.jpg", isLocked: true },
         { id: 26, name: "Chàng Quỷ Nhà Bên", img: "https://i.postimg.cc/fbccMr7D/IMG-2955.png" },
         { id: 25, name: "Tiền Bối Stytle Thần Bí", img: "https://i.postimg.cc/RhQyfdzW/IMG-2954.png" },
@@ -246,10 +287,7 @@ class="code-item">HAPPYWOMENSDAY</span>
 
     const grid = document.getElementById('item-grid');
     items.forEach(i => {
-        // Kiểm tra xem gói có bị khóa nút không
         const isLocked = i.isLocked === true;
-        
-        // Cấu hình Nút bấm
         const btnText = isLocked ? "Hết mã" : "Nhận";
         const btnClass = isLocked ? "btn-main-receive btn-disabled" : "btn-main-receive";
         const btnDisabled = isLocked ? "disabled" : "";
@@ -263,8 +301,6 @@ class="code-item">HAPPYWOMENSDAY</span>
                 <button class="${btnClass}" ${btnDisabled} ${action}>${btnText}</button>
             </div>`;
     });
-
-
 
     const modal = document.getElementById('app-modal');
     const content = document.getElementById('modal-content');
