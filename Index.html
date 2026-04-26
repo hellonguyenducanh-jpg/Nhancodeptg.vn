@@ -13,7 +13,6 @@
         .header-logo { background: #fff; text-align: center; padding: 10px; border-bottom: 2px solid #eee; }
         .header-logo img { height: 40px; }
 
-        /* --- ĐÂY LÀ PHẦN SỬA DUY NHẤT: BẢNG THÔNG BÁO --- */
         .copy-toast {
             position: fixed; 
             top: 20px; 
@@ -40,7 +39,6 @@
         }
         .toast-msg { font-size: 14px; font-weight: 700; color: #333; white-space: nowrap; }
 
-        /* --- GIỮ NGUYÊN 100% CÁC PHẦN CSS CỦA BẠN --- */
         .banner-container { position: relative; width: 100%; }
         .banner { width: 100%; display: block; height: auto; }
         .download-app-panel {
@@ -212,7 +210,6 @@
     function closeWelcome() { document.getElementById('welcomeOverlay').style.display = 'none'; }
     function closeModal() { document.getElementById('app-modal').classList.remove('active'); }
 
-    // DANH SÁCH CODE NGUYÊN BẢN
     const listCodes = ["DRAGONVILLAGEPT", "PTIGMARCH26", "GAMEVERSEPARTY26", "PLAYKAIA2026", "PTNEWCLASS", "SCHOOLOFROCKPT", "TMI10KPRESENT", "PTSTARBEAT", "2026KAIAHAPPY", "THANG3CUOIHAHA"];
     const wrap = document.getElementById('code-list-wrap');
     
@@ -225,7 +222,6 @@
         `;
     });
 
-    // CHỈ SỬA HÀM SAO CHÉP ĐỂ HIỆN TOAST MỚI
     function copyCode(text) {
         navigator.clipboard.writeText(text);
         const toast = document.getElementById('copyToast');
@@ -233,6 +229,7 @@
         toast.classList.add('active');
         setTimeout(() => toast.classList.remove('active'), 2500);
     }
+
     function updateDate() {
         const now = new Date();
         const d = String(now.getDate()).padStart(2, '0');
@@ -242,10 +239,17 @@
     }
     updateDate();
 
+    // 3 GÓI BẠN YÊU CẦU ĐƯỢC THÊM isSoon: true
     const items = [
         { id: 2, name: "2.450 Đá quý", img: "https://i.postimg.cc/85dNNzLf/IMG-2025.png" },
         { id: 1, name: "450 Thỏi vàng", img: "https://i.postimg.cc/ydhss80F/IMG-0014.png" },
-                { id: 38, name: "Thú cưng Blue Dragon KM", img: "https://i.postimg.cc/YSY10B21/IMG-3146.png" },
+        { id: 4, name: "Quỷ Hút Máu Rưng Rưng", img: "https://i.ibb.co/Vp0Xt8Wp/IMG-4083.png" },
+        { id: 3, name: "Cô Gái Dơi", img: "https://i.ibb.co/hJBrN6Q6/IMG-4082.png" },
+        { id: 12, name: "Bảng Tin Hôm Nay", img: "https://i.postimg.cc/jSqyjxgt/IMG-4080.jpg", isSoon: true },
+        { id: 12, name: "Giai Điệu Demin", img: "https://i.postimg.cc/J0J5jpZW/IMG-4076.jpg", isSoon: true },
+        { id: 11, name: "Streamer Meo Meo", img: "https://i.postimg.cc/vZSb6hzm/IMG-4073.jpg", isSoon: true },
+        { id: 39, name: "Bunny Xanh", img: "https://i.postimg.cc/SR9rYrwg/IMG-3237.png" },
+        { id: 38, name: "Thú cưng Blue Dragon KM", img: "https://i.postimg.cc/YSY10B21/IMG-3146.png" },
         { id: 37, name: "Tay Đua Bầu Trời", img: "https://i.postimg.cc/L6FdrHct/IMG-3147.png" },
         { id: 36, name: "Gói LOOK! Hipster KM", img: "https://i.postimg.cc/x8rhcLS4/IMG-3137.png" },
         { id: 35, name: "Máy Bay Mây Huyền Diệu", img: "https://i.postimg.cc/7PgSFSfy/IMG-3138.png" },
@@ -291,18 +295,32 @@
 
     const grid = document.getElementById('item-grid');
     items.forEach(i => {
+        const isSoon = i.isSoon === true;
         const isLocked = i.isLocked === true;
-        const btnText = isLocked ? "Hết mã" : "Nhận";
-        const btnClass = isLocked ? "btn-main-receive btn-disabled" : "btn-main-receive";
-        const btnDisabled = isLocked ? "disabled" : "";
-        const action = isLocked ? "" : `onclick="showItemDetail('${i.name}', '${i.img}', false)"`;
+        
+        let btnText = "Nhận";
+        let btnClass = "btn-main-receive";
+        let btnDisabled = "";
+        let btnAction = `onclick="showItemDetail('${i.name}', '${i.img}', false)"`;
+
+        if (isSoon) {
+            btnText = "Sắp ra mắt";
+            btnClass = "btn-main-receive btn-disabled";
+            btnDisabled = "disabled";
+            btnAction = ""; // Nút bị vô hiệu hóa
+        } else if (isLocked) {
+            btnText = "Hết mã";
+            btnClass = "btn-main-receive btn-disabled";
+            btnDisabled = "disabled";
+            btnAction = ""; 
+        }
 
         grid.innerHTML += `
             <div class="card">
                 <div class="limit-badge">Giới hạn</div>
-                <img src="${i.img}" class="card-img" ${action}>
+                <img src="${i.img}" class="card-img" onclick="showItemDetail('${i.name}', '${i.img}', ${isSoon})">
                 <div style="font-size:13px; font-weight:700; margin: 12px 5px">${i.name}</div>
-                <button class="${btnClass}" ${btnDisabled} ${action}>${btnText}</button>
+                <button class="${btnClass}" ${btnDisabled} ${btnAction}>${btnText}</button>
             </div>`;
     });
 
@@ -410,8 +428,6 @@
                 <button class="btn-popup-receive" onclick="location.reload()">QUAY LẠI</button>`;
         }, 3000);
     }
-
-    function closeModal() { modal.classList.remove('active'); }
 </script>
 </body>
 </html>
