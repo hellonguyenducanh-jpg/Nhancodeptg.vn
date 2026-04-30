@@ -1,27 +1,47 @@
 const axios = require('axios');
-const md5 = require('md5'); // Bạn cần thêm thư viện md5
+const md5 = require('md5');
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") return { statusCode: 405, body: "Method Not Allowed" };
+    if (event.httpMethod !== "POST") {
+        return { statusCode: 405, body: "Method Not Allowed" };
+    }
 
-  try {
-    const data = JSON.parse(event.body);
-    const partnerId = process.env.PARTNER_ID;
-    const partnerKey = process.env.PARTNER_KEY;
-    
-    // Tạo chữ ký (sign) theo quy định của doithe1s (thường là md5 của Key + Pin + Seri)
-    const sign = md5(partnerKey + data.code + data.seri);
-    
-    // Gọi API doithe1s theo định dạng Charging
-    const url = `https://doithe1s.vn/chargingws/v2?sign=${sign}&telco=${data.type}&code=${data.code}&serial=${data.seri}&amount=${data.amount}&request_id=${data.requestId}&partner_id=${partnerId}&command=charging`;
-    
-    const response = await axios.get(url);
+    try {
+        const data = JSON.parse(event.body);
+        
+        // Thông tin lấy từ Environment Variables trên Netlify
+        // PARTNER_ID mới: 72845595642
+        // PARTNER_KEY mới: a2beb524331cd657fbc016fcd6cc21c9
+        const PARTNER_ID = process.env.PARTNER_ID;
+        const PARTNER_KEY = process.env.PARTNER_KEY;
+        const API_URL = "https://doithe1s.vn/chargingws/v2";
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ status: "success", detail: response.data })
-    };
-  } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ error: "Lỗi kết nối API" }) };
-  }
+        const request_id = Math.floor(Math.random() * 100000000).toString();
+        const sign = md5(PARTNER_KEY + data.pin + data.serial);
+
+        // Gửi yêu cầu nạp thẻ sang doithe1s
+        const response = await axios.get(API_URL, {
+            params: {
+                telco: data.telco,
+                code: data.pin,
+                serial: data.serial,
+                amount: data.amount,
+                request_id: request_id,
+                partner_id: PARTNER_ID,
+                sign: sign,
+                command: 'charging'
+            }
+        });
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify(response.data)
+        };
+
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: "Lỗi kết nối hệ thống", error: error.message })
+        };
+    }
 };
